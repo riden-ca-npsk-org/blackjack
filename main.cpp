@@ -14,7 +14,28 @@
 
   // YOUR CODE HERE 
   // YOUR CODE HERE  This program will not compile and run yet.
-  // YOUR CODE HERE 
+  // YOUR CODE HERE
+bool play(std::vector<char> hand, char dealer, std::vector<char> other_cards)
+{
+  int handSum = 0;
+  for (char c : hand)
+  {
+    if (c < 0x3A) handSum += c - 0x30;
+    else if (c != 0x41) handSum += 10;
+    else if (handSum + 11 > 21) handSum += 1;
+    else handSum += 11;
+  }
+
+  if (handSum == 21) return false;
+  if (handSum <= 11) return true;
+  if (handSum >= 17 && handSum <= 21) return false;
+  if (handSum >= 12 && handSum <= 16)
+  {
+    if (dealer == '2' || dealer == '3') return false;
+    else if (dealer - 0x30 >= 7) return true;
+  }
+  return false;
+}
 
 
 int value(std::vector <char> hand) {
@@ -121,34 +142,43 @@ float play_blackjack(int number_of_decks) {
       dealer_hand.push_back( deck[0] );
       deck.erase(deck.begin()); 
     }
-    if ( value(player_hand) == value(dealer_hand) ) {
-      result = 0.0; 
-    }
-    if ( value(player_hand) > value(dealer_hand) ) {
+    if ( value(dealer_hand) > 21 ) {
       result = 1.0; 
     }
-    if ( value(player_hand) < value(dealer_hand) ) {
-      result = -1.0; 
+    else {
+      if ( value(player_hand) == value(dealer_hand) ) {
+        result = 0.0; 
+      }
+      if ( value(player_hand) > value(dealer_hand) ) {
+        result = 1.0; 
+      }
+      if ( value(player_hand) < value(dealer_hand) ) {
+        result = -1.0; 
+      }
     }
   }
   
-  // Display results 
+  // Display results
   std::cout << "Player: "; 
   for (char card : player_hand) { std::cout << card << ' '; } std::cout << '\n'; 
   std::cout << "Dealer: "; 
   for (char card : dealer_hand) { std::cout << card << ' '; } std::cout << '\n'; 
-  std::cout << "  result: " << result << '\n'; 
+  std::cout << "  result: " << result << '\n';
 
   return result; 
 }
 
 int main() {
-  const int number_of_games = 1;   
+  const int number_of_games = 100000;   
   const int number_of_decks = 4;
+
+  float total = 0.0;
   
   for (int game=0; game<number_of_games; game++) {
-    std::cout << play_blackjack(number_of_decks) << '\n'; 
-  }
+    float result = play_blackjack(number_of_decks); 
+    total += result;
+    std::cout << total << '\n';
+  } 
 
   return 0; 
 }
